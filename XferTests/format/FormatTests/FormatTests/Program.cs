@@ -15,13 +15,12 @@ namespace FormatTests
         static void Main(string[] args)
         {
             Console.WriteLine("Hello! Are you ready to do some Excel automation?");
-            Console.WriteLine("Press Enter to launch the folder browser or Esc to quit...");
+            Console.WriteLine("Press Enter to launch the folder browser...");
 
             List<FileInfo> files = new List<FileInfo>();
             while (true)
             {
-                ConsoleKey key = Console.ReadKey().Key;
-                if (key == ConsoleKey.Enter)
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
                 {
                     FolderBrowserDialog fbd = new FolderBrowserDialog
                     {
@@ -40,24 +39,47 @@ namespace FormatTests
                     }
                     break;
                 }
-                else if (key == ConsoleKey.Escape)
+                else
+                {
+                    Console.WriteLine();
                     break;
+                }
             }
-
+            
             if (files.Count == 0)
-            {
-                Console.WriteLine("No valid folder selected, exiting...");
-                System.Threading.Thread.Sleep(1000);
-            }
+                Console.WriteLine("No valid folder selected");
             else
             {
-                FormatExcelDocs(files);
+                Console.WriteLine($"\nI found {files.Count} files!");
+                Console.WriteLine("Now just paste in the area path with the right mouse button and press Enter");
+                Console.WriteLine("The area path should look something like Software\\InspectRx2\\MedInspSW");
+                Console.WriteLine("It can be copied from a Test Case opened in the browser");
+                Console.Write("> ");
+
+                string area = Console.ReadLine();
+
+                Console.WriteLine("\nOne moment...");
+
+                while (true)
+                {
+                    if (FormatExcelDocs(files, area)) break;
+                    else
+                    {
+                        Console.WriteLine("\nHmm I think Excel might be open...");
+                        Console.WriteLine("Try closing it then click Enter to try again or any other key to exit...");
+                        if (Console.ReadKey().Key == ConsoleKey.Enter) continue;
+                        else break;
+                    }
+                }
+                
+                Console.WriteLine("All done! Now just import output.csv into the Test Suite in the browser");
             }
 
+            Console.WriteLine("Press any key to exit");
             Console.ReadKey();
         }
 
-        private static void FormatExcelDocs(List<FileInfo> files)
+        private static bool FormatExcelDocs(List<FileInfo> files, string area)
         {
             try
             {
@@ -78,6 +100,7 @@ namespace FormatTests
                         {
                             // Read current line fields, pointer moves to the next line.
                             string[] fields = csvParser.ReadFields();
+                            if (!string.IsNullOrEmpty(fields[6])) fields[6] = area;
                             for (int i = 0; i < fields.Length; i++)
                             {
                                 if (i == 0 || i == 7)
@@ -96,10 +119,11 @@ namespace FormatTests
 
                 File.WriteAllText(files[0].Directory + @"\output.csv", output);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex);
+                return false;
             }
+            return true;
         }
     }
 }
