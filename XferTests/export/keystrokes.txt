@@ -1,0 +1,9 @@
+1) collapse all test suites
+2) click download/export button
+3) start recording
+4) click download/export button
+5) click Shift + Tab 4 times
+6) click down arrow
+7) click enter
+8) end recording
+9) click download/export button before playing recording
