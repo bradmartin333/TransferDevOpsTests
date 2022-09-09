@@ -9,8 +9,6 @@ namespace FormatTests
 {
     internal class Program
     {
-        public static readonly string Project = "Software";
-
         [STAThread]
         static void Main(string[] args)
         {
