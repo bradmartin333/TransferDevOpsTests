@@ -98,10 +98,11 @@ namespace FormatTests
                         {
                             // Read current line fields, pointer moves to the next line.
                             string[] fields = csvParser.ReadFields();
-                            if (!string.IsNullOrEmpty(fields[6])) fields[6] = area;
+                            if (!string.IsNullOrEmpty(fields[7])) fields[7] = area;
+                            if (fields[1] == "Shared Steps") fields[1] = "";
                             for (int i = 0; i < fields.Length; i++)
                             {
-                                if (i == 0 || i == 7)
+                                if (i == 0 || i == 8)
                                     fields[i] = "";
                                 else
                                 {
