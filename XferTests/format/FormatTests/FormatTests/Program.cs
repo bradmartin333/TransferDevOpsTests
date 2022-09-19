@@ -83,9 +83,12 @@ namespace FormatTests
             {
                 string[] firstFileLines = File.ReadAllLines(files[0].FullName);
                 string output = firstFileLines[0] + '\n';
+                List<string> seenTitles = new List<string>();
 
                 foreach (FileInfo file in files)
                 {
+                    int lastNumeration = 0;
+
                     using (TextFieldParser csvParser = new TextFieldParser(file.FullName))
                     {
                         csvParser.CommentTokens = new string[] { "#" };
@@ -98,8 +101,31 @@ namespace FormatTests
                         {
                             // Read current line fields, pointer moves to the next line.
                             string[] fields = csvParser.ReadFields();
+
+                            // Skip duplicates
+                            bool duplicate = false;
+                            if (!string.IsNullOrEmpty(fields[2]))
+                            {
+                                if (seenTitles.Contains(fields[2]))
+                                    duplicate = true;
+                                else
+                                    seenTitles.Add(fields[2]);   
+                            }
+                            if (duplicate) continue;
+
+                            // Replace area path with new path
                             if (!string.IsNullOrEmpty(fields[7])) fields[7] = area;
+
+                            // Check for special bulleted lists and reformat
                             if (fields[1] == "Shared Steps") fields[1] = "";
+                            if (string.IsNullOrEmpty(fields[3]))
+                                lastNumeration = 0;
+                            else if (fields[3].Contains("."))
+                            {
+                                lastNumeration++;
+                                fields[3] = (int.Parse(fields[3].Split('.').First()) + lastNumeration).ToString();
+                            }
+
                             for (int i = 0; i < fields.Length; i++)
                             {
                                 if (i == 0 || i == 8)
