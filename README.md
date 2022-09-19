@@ -23,3 +23,5 @@ Then, a small C# CLI takes the Test Case download directory and concatenates and
 
 ## Known Bugs 🐞
 - DevOps seems to assign at least one Test Case to the user that uploads `output.csv` even though the field is empty in the file
+- Some test cases get duplicated by DevOps
+- Unknown syntax parsing error by DevOps
